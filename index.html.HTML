@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loading Feelings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+ body {
+    margin: 0;
+    height: 100vh;
+
+    background: url("./hi.jpg") no-repeat center center;
+    background-size: cover;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+
+.loading-screen {
+    text-align: center;
+    width: 320px;
+}
+
+.loading-text {
+    font-size: 22px;
+    color: #ff3b6f;
+    margin-bottom: 20px;
+}
+
+.bar-container {
+    width: 100%;
+    height: 10px;
+    background: #ffeef2;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    width: 0%;
+    background: #ff3b6f;
+    transition: width 3s linear;
+}
+
+.popup {
+    display: none;
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    z-index: 5;
+}
+
+.popup h2 {
+    color: #ff3b6f;
+    margin-bottom: 25px;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#yes {
+    background: #ff3b6f;
+    color: white;
+}
+
+#no {
+    background: #d1d1d1;
+}
+
+
+.result {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+}
+
+.result img {
+    width: 200px;
+    border-radius: 15px;
+}
+
+.result-text {
+    font-size: 50px;
+    font-weight: bold;
+    color: #ff1f5a;
+}
+
+
+.float {
+    position: fixed;
+    top: -20px;
+    font-size: 24px;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh);
+        opacity: 0;
+    }
+}
+
+
+.letter-icon {
+    display: none;
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    font-size: 90px;
+    cursor: pointer;
+    animation: floaty 2s infinite ease-in-out;
+    z-index: 10;
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.25));
+}
+
+@keyframes floaty {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.letter {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+.letter-content {
+    background: #fff0f5;
+    padding: 70px 60px;          
+    border-radius: 32px;         
+    width: 1860px; 
+    height: 520px;               
+    max-width: 95vw;
+    max-height: 85vh;             
+    text-align: center;
+    animation: openLetter 0.6s ease;
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.25),
+        0 0 0 6px rgba(255, 255, 255, 0.6); /* subtle outline */
+}
+
+
+.letter-content p {
+    font-size: 36px;             
+    color: #ff1f5a;
+    font-family: cursive;
+    letter-spacing: 1.5px;
+    min-height: 50px;
+    text-align: left;     
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+@keyframes openLetter {
+    from {
+        transform: scale(0.7) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+
+<div class="loading-screen" id="loading">
+    <div class="loading-text">wait… loading feelings 💕</div>
+    <div class="bar-container">
+        <div class="bar" id="bar"></div>
+    </div>
+</div>
+
+
+<div class="popup" id="popup">
+    <h2>Will you be my Valentine Beautiful? ❤️</h2>
+    <div class="buttons">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+    </div>
+</div>
+
+
+<div class="result" id="result">
+    <img src="https://tenor.com/view/hug-hugs-and-love-gif-9157438116198672239.gif">
+    <div class="result-text">I knew it 😍</div>
+</div>
+
+
+<div class="letter-icon" id="letterIcon">💌</div>
+
+
+<div class="letter" id="letter">
+    <div class="letter-content">
+        <p id="loveText"></p>
+    </div>
+</div>
+
+
+
+<script>
+const bar = document.getElementById("bar");
+const loading = document.getElementById("loading");
+const popup = document.getElementById("popup");
+const result = document.getElementById("result");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+
+
+setTimeout(() => bar.style.width = "100%", 50);
+
+
+bar.addEventListener("transitionend", () => {
+    loading.style.display = "none";
+    popup.style.display = "block";
+});
+
+
+// no button runs away
+noBtn.addEventListener("mouseenter", () => {
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.random() * (window.innerWidth - 100) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 50) + "px";
+});
+
+const letterIcon = document.getElementById("letterIcon");
+const letter = document.getElementById("letter");
+const loveText = document.getElementById("loveText");
+
+const message = "Hey sexy 😚... U are looking gorgeous... How can i say this because u always look gorgeous to me and hamesa lage gi 🥰.... As u know im obsessed with u and deeply in love with u... So i will promise u this... Mai hamesa try karuga improve karne ka payar dene me, gift dene me, communicate karne me till death... I will do everything in my power to keep this relationship healthy... I will change for u if that's it takes to keep u happy and in return i only wants your love🥰.... This is my promise to u my love😚❤️❤️.... I love u beautiful sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo much 😚❤️❤️❤️❤️❤️❤️";
+let index = 0;
+let typingStarted = false;
+
+
+yesBtn.addEventListener("click", () => {
+    popup.style.display = "none";
+    result.style.display = "flex";
+    rain();
+
+    setTimeout(() => {
+        letterIcon.style.display = "block";
+    }, 1200);
+});
+
+
+letterIcon.addEventListener("click", () => {
+    letter.style.display = "flex";
+
+    if (!typingStarted) {
+        typingStarted = true;
+        loveText.textContent = "";
+        index = 0;
+        typeLove();
+    }
+});
+
+function typeLove() {
+    if (index < message.length) {
+        loveText.textContent += message.charAt(index);
+        index++;
+        setTimeout(typeLove, 40);
+    }
+}
+
+    letter.addEventListener("click", () => {
+    letter.style.display = "none";
+});
+
+function rain() {
+    setInterval(() => {
+        const el = document.createElement("div");
+        el.className = "float";
+        el.textContent = Math.random() > 0.5 ? "❤️" : "🌹";
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.animationDuration = (Math.random() * 2 + 3) + "s";
+        document.body.appendChild(el);
+
+        setTimeout(() => el.remove(), 5000);
+    }, 120);
+}
+
+
+</script>
+
+</body>
+</html>
